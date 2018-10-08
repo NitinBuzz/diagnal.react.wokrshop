@@ -28,7 +28,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.props.actions.getMovies(this.state.page);
+    this.props.actions.getMovies(this.state.page, false);
     window.addEventListener("scroll", this.handleScroll);
   }
 
@@ -105,8 +105,9 @@ class App extends Component {
 
   onKeyDown(e) {
     if (e.keyCode === 8) {
+      this.setState({ page: 1 });
       this.setState({ searchKey: "" });
-      this.props.actions.getMovies(this.state.page);
+      this.props.actions.getMovies(1, true);
       this.props.actions.updateSearchKey("");
     }
   }
@@ -166,7 +167,7 @@ class App extends Component {
   }
   fetchMovies(page) {
     console.log(`new movies for page ${page}`);
-    this.props.actions.getMovies(this.state.page);
+    this.props.actions.getMovies(this.state.page, false);
   }
 
   handleScroll = event => {

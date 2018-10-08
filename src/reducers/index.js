@@ -5,6 +5,8 @@ const initalState = [];
 const moviesReducer = (state = initalState, action) => {
   switch (action.type) {
     case "GET_MOVIES":
+      return [...state, ...action.movies];
+    case "GET_MOVIES_X":
       return [...action.movies];
     case "Filter_MOVIES":
       if (action.key.trim().length < 1) {

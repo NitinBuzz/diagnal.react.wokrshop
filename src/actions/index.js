@@ -5,6 +5,11 @@ export const getMovies2 = movies => ({
   movies
 });
 
+export const getMoviesX = movies => ({
+  type: "GET_MOVIES_X",
+  movies
+});
+
 export const updateSearchKey = key => ({
   type: "UPDATE_SEARCH_KEY",
   key
@@ -26,12 +31,17 @@ export const asyncFilterMovies = key => {
   };
 };
 
-export const getMovies = page => {
+export const getMovies = (page, flush) => {
   return dispatch => {
+    console.log(`getting async movies for page ${page} with flush ${flush}`);
     axios
       .get(`CONTENTLISTINGPAGE-PAGE${page}.json`)
       .then(res => {
-        dispatch(getMovies2(res.data.page["content-items"].content));
+        if (!flush) {
+          dispatch(getMovies2(res.data.page["content-items"].content));
+        } else {
+          dispatch(getMoviesX(res.data.page["content-items"].content));
+        }
       })
       .catch(error => {
         console.log(`error: ${error}`);
