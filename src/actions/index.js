@@ -5,6 +5,27 @@ export const getMovies2 = movies => ({
   movies
 });
 
+export const updateSearchKey = key => ({
+  type: "UPDATE_SEARCH_KEY",
+  key
+});
+
+export const filterMovies = key => ({
+  type: "Filter_MOVIES",
+  key
+});
+
+export const asyncFilterMovies = key => {
+  return dispatch => {
+    new Promise((resolve, reject) => {
+      //dispatch(getMovies(1));
+      resolve();
+    }).then(() => {
+      dispatch(filterMovies(key));
+    });
+  };
+};
+
 export const getMovies = page => {
   return dispatch => {
     axios

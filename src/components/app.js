@@ -4,19 +4,27 @@ import { bindActionCreators } from "redux";
 import { Grid, Row, Col } from "react-bootstrap";
 import LazyLoad from "react-lazy-load";
 import { isMobile } from "react-device-detect";
-import { StickyContainer, Sticky } from "react-sticky";
-import { getMovies } from "../actions";
+import {
+  getMovies,
+  updateSearchKey,
+  filterMovies,
+  asyncFilterMovies
+} from "../actions";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       posts: [],
+      searchKey: "",
       page: 1,
       init: true,
       isVisible: false,
       isMobile: false
     };
+    this.handleSearch = this.handleSearch.bind(this);
+    this.showHead = this.showHead.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
   }
 
   componentDidMount() {
@@ -59,6 +67,7 @@ class App extends Component {
         return (
           <Col
             xs={4}
+            key={index}
             style={{
               float: "left",
               marginBottom: "45px",
@@ -83,6 +92,25 @@ class App extends Component {
       <div>Loading...</div>
     );
   }
+
+  handleSearch(e) {
+    e.preventDefault();
+    this.setState({ searchKey: e.target.value });
+    if (e.target.value.trim().length > 1) {
+      this.props.actions.updateSearchKey(this.state.searchKey);
+      this.props.actions.asyncFilterMovies(this.props.search.searchKey);
+    }
+    return;
+  }
+
+  onKeyDown(e) {
+    if (e.keyCode === 8) {
+      this.setState({ searchKey: "" });
+      this.props.actions.getMovies(this.state.page);
+      this.props.actions.updateSearchKey("");
+    }
+  }
+
   showHead() {
     return (
       <div style={{ position: "sticky", top: "0" }}>
@@ -96,27 +124,41 @@ class App extends Component {
           <input
             type="image"
             src="./assets/Back.png"
+            alt="back"
             width="28"
             height="28"
             style={{ display: "inline", float: "left", paddingTop: "0px" }}
           />
-          <p
-            style={{
-              display: "inline",
-              color: "#ffffff",
-              fontSize: "4vw",
-              marginLeft: "20px"
-            }}
-          >
-            {" "}
-            Romantic Comedy
-          </p>
+          <span>
+            <input
+              type="text"
+              onChange={e => this.handleSearch(e)}
+              onKeyDown={this.onKeyDown}
+              value={this.state.searchKey}
+              style={{
+                border: "1px solid #2c2c2d",
+                display: "inline",
+                backgroundColor: "#131314",
+                color: "#ffffff",
+                fontSize: "4vw",
+                marginLeft: "20px",
+                outline: "none"
+              }}
+            />
+          </span>
           <input
             type="image"
             src="./assets/search.png"
-            width="28"
+            alt="search"
+            width="48"
             height="28"
-            style={{ display: "inline", float: "right", paddingTop: "0px" }}
+            onClick={e => this.handleSearch(e)}
+            style={{
+              display: "inline",
+              float: "right",
+              paddingTop: "0px",
+              paddingRight: "20px"
+            }}
           />
         </div>
       </div>
@@ -201,12 +243,15 @@ class App extends Component {
 }
 
 const mapStateToProps = state => {
-  return { movies: state.movies };
+  return { movies: state.movies, search: state.search };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    actions: bindActionCreators({ getMovies }, dispatch)
+    actions: bindActionCreators(
+      { getMovies, updateSearchKey, filterMovies, asyncFilterMovies },
+      dispatch
+    )
   };
 };
 
