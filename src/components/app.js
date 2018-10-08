@@ -38,7 +38,7 @@ class App extends Component {
 
   genImage(image, index, length) {
     return (
-      <LazyLoad height="auto">
+      <LazyLoad>
         <div
           style={{
             alignItems: "center",
